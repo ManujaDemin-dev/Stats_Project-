@@ -1,4 +1,4 @@
-# 📘 Monte Carlo Simulation & Dice Probability --- Group Project
+# 📘 Monte Carlo Simulation & Dice Probability
 
 ## 📌 Overview
 
