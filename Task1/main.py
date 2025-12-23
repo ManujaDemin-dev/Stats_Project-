@@ -101,6 +101,7 @@ def main():
         columns=[
             "Experiment_ID",
             "N",
+            "Run",
             "Hits",
             "Total_Throws",
             "Hit_Probability",
@@ -114,11 +115,11 @@ def main():
     
     for n in args.n:
         print(f"\nRunning simulations for N={n} with {args.runs} runs...")
-        start_n_time = time.time()
         
         for run in range(1,args.runs +1 ):
             try:
                 run_start_time = time.time()
+                
                 hits,prob,pi_est,eror = estimate_pi(n)
                 run_time_ms =(time.time() - run_start_time) * 1000
                 
@@ -138,9 +139,8 @@ def main():
                 row_index += 1
                 experiment_id += 1
                 
-            except Exception as e:
-                print(f"\nMonte Carlo Simulation Completed successfully for N={n} with {args.runs} runs.")
-                print(f"Total Experiments Executed: {len(df)}")
-                print(df.head())
+                print(f"Completed Run {run}/{args.runs} for N={n})")
                 
+            except Exception as e:
+                print(f"Run {run} for N={n} failed with error: {e}")
                 
