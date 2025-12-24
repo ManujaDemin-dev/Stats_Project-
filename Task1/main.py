@@ -107,7 +107,7 @@ def main():
             "Hit_Probability",
             "Pi_Estimate",
             "Absolute_Error",
-            "Execution_Time(s)",
+            "Execution_Time(ms)",
         ]
     )
     experiment_id = 1
@@ -144,3 +144,86 @@ def main():
             except Exception as e:
                 print(f"Run {run} for N={n} failed with error: {e}")
                 
+    #Summary Statistics Calculations
+    
+    summary_df = df.groupby("N").agg(
+        Mean_Pi=("Pi_Estimate", "mean"),
+        Mode_Pi=("Pi_Estimate", lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan),
+        Mean_Absolute_Error=("Absolute_Error", "mean"),
+        Avg_Execution_Time_ms=("Execution_Time(ms)", "mean")
+    ).reset_index()
+    
+    #Save Results to Excel
+    
+    timestamp = int(time.time())
+    filename = f"MonteCarloSim_Results_{timestamp}.xlsx"
+
+    try:
+        with pd.ExcelWriter(filename, engine="openpyxl") as writer:
+            df.to_excel(writer, sheet_name="Detailed_Logs", index=False)
+            
+            summary_df.to_excel(writer, sheet_name="Summary_Statistics", index=False)
+
+            for sheet in writer.sheets.values():
+                for col in sheet.columns:
+                    max_length = 0
+                    column = col[0].column_letter
+                    for cell in col:
+                        try:
+                            if len(str(cell.value)) > max_length:
+                                max_length = len(str(cell.value))
+                        except:
+                            pass
+                    sheet.column_dimensions[column].width = max_length + 2
+
+        print(f"\n[SUCCESS] Excel workbook saved: {filename}")
+
+    except Exception as e:
+        print(f"\n[ERROR] Failed to save Excel file: {e}")
+    
+    # Convergence Plot    
+    
+    if not args.no_plot:
+        plt.figure(figsize=(10, 6))
+
+        plt.plot(
+            summary_df["N"],
+            summary_df["Mean_Pi"],
+            marker="o",
+            linewidth=2,
+            label="Estimated π (Mean)"
+        )
+        
+        plt.axhline(
+            np.pi,
+            linestyle="--",
+            linewidth=2,
+            label=f"Actual π ({round(np.pi, 5)})"
+        )
+
+        plt.xscale("log")
+        plt.xlabel("Number of Dart Throws (N)")
+        plt.ylabel("Estimated Value of π")
+        plt.title("Monte Carlo Simulation: Convergence of π Estimate")
+        plt.legend()
+        plt.grid(True, which="both", alpha=0.5)
+        
+        final_n = summary_df["N"].iloc[-1]
+        final_val = summary_df["Mean_Pi"].iloc[-1]
+        plt.annotate(
+            f"Final Estimate: {round(final_val, 4)}",
+            xy=(final_n, final_val),
+            xytext=(final_n * 0.6, final_val + 0.01),
+            arrowprops=dict(arrowstyle="->")
+        )
+    
+        plt.tight_layout()
+        plot_filename = f"Pi_Convergence_{timestamp}.png"
+        plt.savefig(plot_filename)
+        print(f"[SUCCESS] Plot saved as: {plot_filename}")
+
+        plt.show()
+
+        
+if __name__ == "__main__":
+    main()
