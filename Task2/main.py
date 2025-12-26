@@ -1,14 +1,18 @@
 import pandas as pd
 import random
 import argparse as ap
+from Simulator import plot
+
+Value =0.06287
 
 if __name__ == "__main__":
     print("Hellow !")
 
     parser = ap.ArgumentParser()
     parser.add_argument("--NUM_OF_DICE" , help="Enter the number of dice")
-    parser.add_argument("--NUM_OF_Trials" , help="Enter the number of Trials")
+    parser.add_argument("--NUM_OF_Trials", help="Enter the number of Trials")
     args = parser.parse_args()
+
 
     a = args.NUM_OF_DICE
     b = args.NUM_OF_Trials
@@ -84,3 +88,5 @@ if __name__ == "__main__":
         print(probability_trials)
 
         print(Dice_data.head())
+
+plot(Trials,probability_trials)
