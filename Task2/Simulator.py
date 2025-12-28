@@ -1,19 +1,18 @@
 import matplotlib.pyplot as plt
 
 
-def plot(total_trials, final_probability):
+def plot(total_trials, final_probability , exact_probability):
     plt.figure(figsize=(10, 6))
     
    
-    Theoretical_Probability = 0.06287
-
+    Theoretical_Probability = exact_probability
  
     plt.axhline(y=Theoretical_Probability, color='red', linestyle='--', 
                 label=f'Theoretical ({Theoretical_Probability})', alpha=0.7)
 
  
     plt.hlines(y=final_probability, xmin=1, xmax=total_trials, 
-               color='tab:blue', linewidth=4, label='Estimated Probability')
+               color='tab:blue', linewidth=4, label=f'Estimated Probability({final_probability})')
 
 
     plt.xlim(1, total_trials + 1) 

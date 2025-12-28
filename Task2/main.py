@@ -4,8 +4,9 @@ import argparse as ap
 from Simulator import plot
 import openpyxl as xl
 from datetime import datetime
+from exact_probability import cal_exact_probability
 
-Value =0.06287
+
 
 def main():
     parser = ap.ArgumentParser(description="Dice Monte Carlo Simulation")
@@ -22,8 +23,18 @@ def main():
     No_of_dice = args.NUM_OF_DICE
     Trials = args.NUM_OF_Trials
 
-    # combinations = 6** No_of_dice
-    # print(f"Number of all the outcomes : {combinations}")
+    favorable_count = cal_exact_probability(32, No_of_dice)
+    total_outcomes = 6 ** No_of_dice
+    exact_probability_value = favorable_count / total_outcomes
+
+
+    #implementing a dynamic way to calculate exact probability
+    print("Exact Probability Calculation: \n")
+    print(f"Exact favourable (sum = 32 combinations) : {favorable_count}")
+    print(f"Total Outcomes (6^^num_of_dice({No_of_dice})) : {total_outcomes}")
+    print(f"Exact Probability : {exact_probability_value:.8f} \n")
+
+
 
     TRIALS = []
 
@@ -51,7 +62,20 @@ def main():
     })
 
     Count_32 = (Dice_data["Sum"] == 32).sum()
-    probability_trials = Count_32 / Trials
+
+    Dice_data['Is_Sum_32'] = Dice_data['Sum'] == 32
+
+    probability_extimated = Count_32 / Trials
+
+    #show the results
+
+    print("Simulation Results : \n")
+    print(f"Trials : {Trials}")
+    print(f"Favourable outcomes (Sum = 32) : {Count_32}")
+    print(f"Estimated Probability : {probability_extimated:.7f} ")
+    print(f"Estimated probability in prcentage : {Count_32*100/Trials} %")
+
+    print("\n")
 
     with pd.ExcelWriter(filename, engine='openpyxl') as writer:
         Dice_data.to_excel(writer, sheet_name='Simulation_Data', index=False)
@@ -59,12 +83,14 @@ def main():
             
 
 
-    print(probability_trials)
+    print(probability_extimated)
+
+    print("This is the head of the Dice DataFrame: Check the excel file for complete data")
 
     print(Dice_data.head())
 
 
-    plot(Trials, probability_trials)
+    plot(Trials, probability_extimated , exact_probability_value)
 
 
 if __name__ == "__main__":
