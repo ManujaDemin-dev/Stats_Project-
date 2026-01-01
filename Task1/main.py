@@ -11,8 +11,8 @@ from openpyxl.utils import get_column_letter
 
 def estimate_pi(n):
 
-    x_axis = np.random.uniform(0, 1, n)
-    y_axis = np.random.uniform(0, 1, n)
+    x_axis = np.random.uniform(-1, 1, n)
+    y_axis = np.random.uniform(-1, 1, n)
 
     inside_circle = (x_axis**2 + y_axis**2) <= 1
     hits = inside_circle.sum()
@@ -67,26 +67,6 @@ def validate_inputs(ns, runs):
     for n in ns:
         if n <= 0:
             raise ValueError("All N values must be positive integers.")
-        
-    min_N = 100
-    max_N = 10000000
-    for n in ns:
-
-        if n<=0:
-            raise ValueError("All N values must be positive integers.")
-        if n < min_N:
-            raise ValueError(f"N value {n} is too small. Minimum is {min_N}.")
-        if n > max_N:
-            raise ValueError(f"N value {n} is too large. Maximum is {max_N}.")
-        
-    try:
-        test_filename = "permission_test.xlsx"
-        test_df = pd.DataFrame({"Test": [1, 2, 3]})
-        
-        with pd.ExcelWriter(test_filename, engine="openpyxl") as writer:
-            test_df.to_excel(writer, index=False)
-    except PermissionError:
-        raise PermissionError("No permission to write Excel files in the current directory.")
     
     if len(ns) != len(set(ns)):
         raise ValueError("Duplicate N values are not allowed.")
@@ -97,90 +77,99 @@ def main():
     args = parse_arguments()
     validate_inputs(args.n,args.runs)
     
-    df = pd.DataFrame(
-        columns=[
-            "Experiment_ID",
-            "N",
-            "Run",
-            "Hits",
-            "Total_Throws",
-            "Hit_Probability",
-            "Pi_Estimate",
-            "Absolute_Error",
-            "Execution_Time(ms)",
-        ]
-    )
-    experiment_id = 1
-    row_index = 0
-    
-    for n in args.n:
-        print(f"\nRunning simulations for N={n} with {args.runs} runs...")
-        
-        for run in range(1,args.runs +1 ):
-            try:
-                run_start_time = time.time()
-                
-                hits,prob,pi_est,eror = estimate_pi(n)
-                run_time_ms =(time.time() - run_start_time) * 1000
-                
-                df.loc[row_index] = [
-                    experiment_id,
-                    n,
-                    run,
-                    hits,
-                    n,
-                    prob,
-                    pi_est,
-                    eror,
-                    round(run_time_ms,3),
-                    
-                ]
-                
-                row_index += 1
-                experiment_id += 1
-                
-                print(f"Completed Run {run}/{args.runs} for N={n})")
-                
-            except Exception as e:
-                print(f"Run {run} for N={n} failed with error: {e}")
-                
-    #Summary Statistics Calculations
-    
-    summary_df = df.groupby("N").agg(
-        Mean_Pi=("Pi_Estimate", "mean"),
-        Mode_Pi=("Pi_Estimate", lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan),
-        Mean_Absolute_Error=("Absolute_Error", "mean"),
-        Avg_Execution_Time_ms=("Execution_Time(ms)", "mean")
-    ).reset_index()
-    
-    #Save Results to Excel
-    
+    all_results = []
     timestamp = int(time.time())
     filename = f"MonteCarloSim_Results_{timestamp}.xlsx"
 
-    try:
-        with pd.ExcelWriter(filename, engine="openpyxl") as writer:
-            df.to_excel(writer, sheet_name="Detailed_Logs", index=False)
-            
-            summary_df.to_excel(writer, sheet_name="Summary_Statistics", index=False)
+    with pd.ExcelWriter(filename, engine="openpyxl") as writer:
 
-            for sheet in writer.sheets.values():
-                for col in sheet.columns:
-                    max_length = 0
-                    column = col[0].column_letter
-                    for cell in col:
-                        try:
-                            if len(str(cell.value)) > max_length:
-                                max_length = len(str(cell.value))
-                        except:
-                            pass
-                    sheet.column_dimensions[column].width = max_length + 2
+        for n in args.n:
+            print(f"\nRunning simulations for N = {n} with {args.runs} runs...")
 
-        print(f"\n[SUCCESS] Excel workbook saved: {filename}")
+            df = pd.DataFrame(
+                columns=[
+                    "N",
+                    "Run",
+                    "Hits",
+                    "Total_Throws",
+                    "Hit_Probability",
+                    "Pi_Estimate",
+                    "Absolute_Error",
+                    "Execution_Time(ms)",
+                ]
+            )
+        
+            for run in range(1,args.runs + 1):
+                try:
+                    run_start_time = time.time()
+                
+                    hits, prob, pi_est, error = estimate_pi(n)
+                    run_time_ms =(time.time() - run_start_time) * 1000
+                    
+                    row = [
+                        n,
+                        run,
+                        hits,
+                        n,
+                        prob,
+                        pi_est,
+                        error,
+                        round(run_time_ms, 3),
+                    ]
+                    
+                    df.loc[len(df)] = row
+                    all_results.append(row)
+                    
+                    print(f"Completed Run {run}/{args.runs} for N={n})")
+                
+                except Exception as e:
+                    print(f"Run {run} for N={n} failed with error: {e}")
 
-    except Exception as e:
-        print(f"\n[ERROR] Failed to save Excel file: {e}")
+            #Writing N per sheet
+            sheet_name = f"N_{n}"
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+            ws = writer.sheets[sheet_name]
+            ws.freeze_panes = "A2"
+
+            for i, col in enumerate(ws.columns, start=1):
+                max_length = max(len(str(cell.value)) for cell in col if cell.value is not None)
+                ws.column_dimensions[get_column_letter(i)].width = max_length + 2
+                
+        #Summary Statistics Calculations
+        df_all = pd.DataFrame(
+            all_results,
+            columns=[
+                "N",
+                "Run",
+                "Hits",
+                "Total_Throws",
+                "Hit_Probability",
+                "Pi_Estimate",
+                "Absolute_Error",
+                "Execution_Time(ms)",
+            ]
+        )
+
+        summary_df = df_all.groupby("N").agg(
+            Mean_Pi=("Pi_Estimate", "mean"),
+            Mode_Pi=("Pi_Estimate", lambda x: x.mode().iloc[0]),
+            Mean_Absolute_Error=("Absolute_Error", "mean"),
+            Avg_Execution_Time_ms=("Execution_Time(ms)", "mean")
+        ).reset_index()
+
+        #Save Results to Excel
+        summary_df.to_excel(writer, sheet_name="Summary_Statistics", index=False)
+
+        ws = writer.sheets["Summary_Statistics"]
+        ws.freeze_panes = "A2"
+
+        for i, col in enumerate(ws.columns, start=1):
+            max_length = max(len(str(cell.value)) for cell in col if cell.value is not None)
+            ws.column_dimensions[get_column_letter(i)].width = max_length + 2
     
+    print(f"\nExcel Results saved to {filename}")
+
     # Convergence Plot    
     
     if not args.no_plot:
