@@ -4,7 +4,7 @@ def plot(total_trials, final_probability , exact_probability):
     try:
         
         if not isinstance(total_trials,int):
-            raise TypeError("totaal_trials must be an integer.")
+            raise TypeError("total_trials must be an integer.")
         
         if not all(isinstance(x,(int,float)) for x in [final_probability,exact_probability]):
             raise TypeError("Probabilities must be numbers.")
