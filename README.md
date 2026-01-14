@@ -62,15 +62,7 @@ We investigate the probability that the **sum equals exactly 32**.
 
 ### **1. Install Dependencies**
 
-    pip install -r requirements.txt
-
-### **2. Run Dart Simulation**
-
-    python monte_carlo_darts.py
-
-### **3. Run Dice Probability Program**
-
-    python dice_probability.py
+    pip install -r requirement.txt
 
 ------------------------------------------------------------------------
 
