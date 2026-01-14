@@ -1,0 +1,41 @@
+==========HOW TO RUN THE PROGRAM==========
+
+Run the program with dafault values:
+
+
+> python3 main.py 
+
+To view the help menu and see available arguments:
+
+
+> python3 main.py -h
+
+This will display a short description on how to pass Command-line Arguments.
+
+Run the program with custom arguments:
+
+
+> python3 main.py [--NUM_OF_DICE <value>] [--NUM_OF_Trails <value>]
+
+
+Example code...
+
+
+>> python3 main.py --NUM_OF_DICE 10 --NUM_OF_Trails 1000
+
+
+Default Values:
+
+NUM_OF_DICE = 10 (default)
+NUM_OF_Trails = 500 (default)
+
+
+**NOTES
+
+All arguments are Optional.
+If no arguments are provided, the program will run using default values.
+You can change one argument, and the program will still run smoothly.
+Any argument not provided will automatically use it's default values.
+
+
+
