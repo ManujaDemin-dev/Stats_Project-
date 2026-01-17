@@ -65,6 +65,7 @@ def main():
             ]
         })
 
+
         Count_32 = (Dice_data["Sum"] == 32).sum()
 
         Dice_data['Is_Sum_32'] = Dice_data['Sum'] == 32
@@ -80,13 +81,27 @@ def main():
         print(f"Estimated probability in prcentage : {Count_32*100/Trials} %")
 
         print("\n")
+
+        result_df = pd.DataFrame({
+              "Results" : ["No.OfTrials","sum(32)Count" , "ExactProbabilityValue", "EstimatedProbability"],
+              "values" : [
+                    Trials,
+                    Count_32,
+                    exact_probability_value,
+                    probability_extimated
+              ]    
+        })
+
         try:
             with pd.ExcelWriter(filename, engine='openpyxl') as writer:
                 Dice_data.to_excel(writer, sheet_name='Simulation_Data', index=False)
                 stact_df.to_excel(writer, sheet_name='Summary', index=False)
+                result_df.to_excel(writer, sheet_name='Results', index=False)
+
         except PermissionError:
             print(f"Permission denied: Unable to write to file '{filename}'. Please close the file if it is open and try again.")
             sys.exit(1)
+            
 
         print(probability_extimated)
 
