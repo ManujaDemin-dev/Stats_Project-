@@ -61,6 +61,7 @@ def main():
         ]
     })
 
+
     Count_32 = (Dice_data["Sum"] == 32).sum()
 
     Dice_data['Is_Sum_32'] = Dice_data['Sum'] == 32
@@ -77,9 +78,22 @@ def main():
 
     print("\n")
 
+    result_df = pd.DataFrame({
+        "Results" : ["No.of Trials" ,"sum(32) count", "Exact Probability" , "Simulation result" ],
+        "value" : [
+            Trials,
+            Count_32,
+            exact_probability_value,
+            probability_extimated
+
+        ]
+    })
+
+
     with pd.ExcelWriter(filename, engine='openpyxl') as writer:
         Dice_data.to_excel(writer, sheet_name='Simulation_Data', index=False)
         stact_df.to_excel(writer, sheet_name='Summary', index=False)
+        result_df.to_excel(writer, sheet_name='Results', index=False)
             
 
 
