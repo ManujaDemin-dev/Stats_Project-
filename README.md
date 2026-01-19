@@ -58,14 +58,6 @@ We investigate the probability that the **sum equals exactly 32**.
 
 ------------------------------------------------------------------------
 
-## ▶️ How to Run
-
-### **1. Install Dependencies**
-
-    pip install -r requirement.txt
-
-------------------------------------------------------------------------
-
 ## 👥 Contributors
 
 Yomith Silva
