@@ -187,6 +187,7 @@ def main():
             np.pi,
             linestyle="--",
             linewidth=2,
+            color="red",
             label=f"Actual π ({round(np.pi, 5)})"
         )
 
@@ -202,8 +203,11 @@ def main():
         plt.annotate(
             f"Final Estimate: {round(final_val, 4)}",
             xy=(final_n, final_val),
-            xytext=(final_n * 0.6, final_val + 0.01),
-            arrowprops=dict(arrowstyle="->")
+            xycoords="data",
+            xytext=(-40, 30),
+            textcoords="offset points",
+            arrowprops=dict(arrowstyle="->"),
+            ha="right"
         )
     
         plt.tight_layout()

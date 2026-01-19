@@ -1,5 +1,9 @@
-pandas
-numpy
-openpyxl
-matplotlib
-random
+---Required Libraries
+
+--pandas
+--numpy
+--openpyxl
+--matplotlib
+--random
+--time
+--argparse

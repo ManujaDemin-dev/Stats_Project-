@@ -1,6 +1,6 @@
 ==========HOW TO RUN THE PROGRAM==========
 
-Run the program with dafault values:
+Run the program with default values:
 
 
 > python3 main.py 
