@@ -1,0 +1,32 @@
+==========HOW TO RUN THE PROGRAM==========
+
+Run the Program with required arguments
+
+> python main.py --n 1000
+
+To view the help menu and see the avaliable arguments 
+
+> python main.py -h
+
+This will display a short description of how to pass Command-Line arguments
+
+Run the program with Custom Arguments
+
+> python main.py --n <Values> [--runs <Value>] [--no-plot]
+
+Example Command: 
+
+> python main.py --n 1000 10000 100000 1000000 --runs 10
+
+Default Values:
+
+runs = 10 (Default)
+
+==========NOTES==========
+
+- The --n argument is mandatory and must contain one or more positive integers.
+- All other Arguments are Optional.
+- If --runs is not provided, the program uses default values.
+- If --no-plot is specified, the convergence plot will not be generated.
+- Results are automatically exported to an Excel workbook and a plot image (if enabled).
+
