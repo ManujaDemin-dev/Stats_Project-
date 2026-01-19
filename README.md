@@ -60,10 +60,10 @@ We investigate the probability that the **sum equals exactly 32**.
 
 ## 👥 Contributors
 
-Yomith Silva
-Manuja Demin
-Nethushi Aloka
-Yasith Jayanga
-Zahin Rayan
-Sithija Imesh
+- Yomith Silva
+- Manuja Demin
+- Nethushi Aloka
+- Yasith Jayanga
+- Zahin Rayan
+- Sithija Imesh
 
