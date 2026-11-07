@@ -1,0 +1,2 @@
+executable projects are easy 
+let's make it a .exe 
